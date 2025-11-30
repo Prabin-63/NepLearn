@@ -1,125 +1,153 @@
 import pytesseract
 from pdf2image import convert_from_path
+from PIL import Image
 import re
-import fitz
 import json
+import os
+
+
+def extract_single_question_marks(raw):
+    if not raw:
+        return None
+
+    s = raw.replace("×", "x").replace("*", "x").replace(" ", "")
+
+    m = re.search(r'\d+Qx(\d+)', s, flags=re.IGNORECASE)
+    if m:
+        return m.group(1)
+
+    m = re.search(r'\d+x(\d+)', s)
+    if m:
+        return m.group(1)
+
+    m = re.search(r'(\d+)Qx(\d+)=?(\d+)?', s, flags=re.IGNORECASE)
+    if m:
+        return m.group(2)
+
+    nums = re.findall(r'\d+', s)
+    if len(nums) == 1:
+        return nums[0]
+
+    return None
+
+
+# OCR setup and PDF reading
+pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 pages = convert_from_path("COMP.pdf")
 
-text = ""
-for i, page in enumerate(pages):
-    print(f"Processing page {i+1}...")
-    text += pytesseract.image_to_string(page)
+# read all pages and join OCR results
+page_texts = []
+for i, pg in enumerate(pages):
+    img_path = f"page_{i+1}.png"
+    pg.save(img_path, "PNG")
+    page_texts.append(pytesseract.image_to_string(Image.open(img_path)))
+
+raw_text = "\n".join(page_texts)
 
 
+# basic text cleanup
+text = (raw_text.replace("“", '"')
+                 .replace("”", '"')
+                 .replace("×", "x")
+                 .replace("‘", "'")
+                 .replace("’", "'"))
 
-# Save text to file
-with open("output.txt", "w", encoding="utf-8") as f:
-    f.write(text)
 
-print("Extraction completed. Check output.txt")
+# extract course and semester
+course_match = re.search(r'Course\s*:\s*([A-Za-z0-9 ]+)', text)
+course = course_match.group(1).strip() if course_match else None
 
-# -------- CONFIG --------
-PDF_FILE = "COMP.pdf"
-OUTPUT_JSON = "multi_year_questions.json"
-COURSE_SUBJECT_MAP = {
-    "COMP 103": "C Programming",
-    "COMP 104": "Data Structures",
-    "MATH 101": "Calculus"
-}
+sem_match = re.search(r'Semester\s*:\s*([A-Za-z0-9]+)', text)
+semester = sem_match.group(1).strip() if sem_match else None
 
-# -------- STEP 1: Convert PDF to Text --------
-def pdf_to_text(pdf_file):
-    text = ""
-    try:
-        doc = fitz.open(pdf_file)
-        for page in doc:
-            text += page.get_text()
-        if text.strip():
-            return text
-    except Exception as e:
-        print("PyMuPDF failed:", e)
-    
-    print("Using OCR for PDF...")
-    pages = convert_from_path(pdf_file)
-    for i, page in enumerate(pages):
-        print(f"Processing page {i+1}/{len(pages)}...")
-        text += pytesseract.image_to_string(page)
-    return text
 
-# -------- STEP 2: Split PDF into Exam Blocks --------
-def split_exam_blocks(text):
-    # This regex assumes each exam starts with "End Semester Examination" + year
-    blocks = re.split(r'(End Semester Examination\s*\n\d{4})', text)
-    exams = []
-    i = 0
-    while i < len(blocks) - 1:
-        header = blocks[i] + blocks[i+1]  # merge header with content
-        content = blocks[i+2] if i+2 < len(blocks) else ""
-        exams.append(header + "\n" + content)
-        i += 3
-    return exams
+# find section headings
+sections = []
+for m in re.finditer(r'SECTION\s+"?([A-Z])"?', text, flags=re.IGNORECASE):
+    sections.append({"section": m.group(1), "pos": m.start()})
 
-# -------- STEP 3: Extract Metadata & Questions from Each Exam --------
-def process_exam_block(block):
-    # Metadata
-    year_match = re.search(r'(\d{4})', block)
-    year = int(year_match.group(1)) if year_match else None
 
-    course_match = re.search(r'Course\s*:\s*([A-Z]+\s*\d+)', block)
-    course_code = course_match.group(1).strip() if course_match else None
+# find marks blocks
+marks_list = []
+for m in re.finditer(r'\[([^\]]*?)\s*marks\]', text, flags=re.IGNORECASE):
+    marks_list.append({"marks": m.group(1).strip(), "pos": m.start()})
 
-    semester_match = re.search(r'Semester\s*:\s*([A-Z0-9]+)', block)
-    semester = semester_match.group(1).strip() if semester_match else None
 
-    subject = COURSE_SUBJECT_MAP.get(course_code, course_code)
+# find question numbers
+questions = []
+for m in re.finditer(r'\b(\d{1,2})\.\s', text):
+    questions.append({"qnum": m.group(1), "pos": m.start()})
 
-    # Sections & Questions
-    questions_list = []
-    section_matches = re.split(r'SECTION\s*[“"]?([A-Z])', block, flags=re.I)
-    
-    # section_matches[0] is before first section
-    for i in range(1, len(section_matches), 2):
-        section_letter = section_matches[i].strip()
-        section_text = section_matches[i+1].strip()
+# add end marker
+questions.append({"qnum": None, "pos": len(text)})
 
-        # Optional: extract marks
-        marks_match = re.search(r'Marks\s*:\s*(\d+)', section_text)
-        section_marks = int(marks_match.group(1)) if marks_match else None
 
-        # Extract questions
-        q_matches = re.findall(r'(\d+)\.\s*(.+?)(?=\n\d+\.|\Z)', section_text, re.S)
-        for q_num, q_text in q_matches:
-            questions_list.append({
-                "exam_year": year,
-                "course_code": course_code,
-                "subject": subject,
-                "semester": semester,
-                "section": section_letter,
-                "question_number": int(q_num),
-                "marks": section_marks,
-                "text": q_text.strip(),
-                "difficulty": "medium",  # default
-                "question_id": f"{year}_{course_code}_{section_letter}_{q_num}"
-            })
-    return questions_list
+# extract question text
+question_blocks = []
+for i in range(len(questions) - 1):
+    start = questions[i]["pos"]
+    end = questions[i + 1]["pos"]
 
-# -------- MAIN --------
-def main():
-    full_text = pdf_to_text(PDF_FILE)
-    exam_blocks = split_exam_blocks(full_text)
-    
-    all_questions = []
-    for block in exam_blocks:
-        questions = process_exam_block(block)
-        all_questions.extend(questions)
+    num = questions[i]["qnum"]
+    block = text[start:end].strip()
 
-    # Save JSON
-    with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(all_questions, f, indent=4, ensure_ascii=False)
-    
-    print(f"Processed {len(all_questions)} questions across {len(exam_blocks)} exams.")
-    print(f"JSON saved to {OUTPUT_JSON}")
+    clean = re.sub(r'^[^A-Za-z0-9]\d+\s\.\s*', '', block).strip()
+    if num is None:
+        continue
 
-if __name__ == "__main__":
-    main()
+    question_blocks.append({"qnum": num, "text": clean, "pos": start})
+
+
+# combine extracted data
+final_questions = []
+
+for q in question_blocks:
+    pos = q["pos"]
+
+    sec = None
+    for s in reversed(sections):
+        if s["pos"] <= pos:
+            sec = s["section"]
+            break
+
+    marks = None
+    for m in reversed(marks_list):
+        if m["pos"] <= pos:
+            marks = extract_single_question_marks(m["marks"])
+            break
+
+    final_questions.append({
+        "course": course,
+        "semester": semester,
+        "question_number": q["qnum"],
+        "question_text": q["text"],
+        "section": sec,
+        "marks": marks,
+        "year": "2013",
+        "exam_type": "End Semester"
+    })
+
+
+# for q in final_questions:
+#     print(q)
+#     print("")
+
+filename = "multi_year_questions.json"
+
+# if file exists, load previous data; otherwise start empty
+if os.path.exists(filename):
+    with open(filename, "r", encoding="utf-8") as f:
+        try:
+            old_data = json.load(f)
+        except json.JSONDecodeError:
+            old_data = []
+else:
+    old_data = []
+
+# extend old data with newly extracted questions
+old_data.extend(final_questions)
+
+# write everything back to the file
+with open(filename, "w", encoding="utf-8") as f:
+    json.dump(old_data, f, indent=4, ensure_ascii=False)
