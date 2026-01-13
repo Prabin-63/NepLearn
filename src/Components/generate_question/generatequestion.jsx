@@ -19,9 +19,15 @@ export const Generatequestion = () => {
       role: "bot",
       text: "This is a sample generated question response.",
     };
-
+    
     setMessages([...messages, userMessage, botMessage]);
     setInput("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleGenerate();
+    }
   };
 
   return (
@@ -51,6 +57,7 @@ export const Generatequestion = () => {
             placeholder="Ask Nep-Learn to generate a question..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <button onClick={handleGenerate}>Generate</button>
         </div>

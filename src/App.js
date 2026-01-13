@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Loginsignup } from "./Components/login/signup/loginsignup";
 import { Homepage } from "./Components/home_page/homepage";
 import { Generatequestion } from "./Components/generate_question/generatequestion";
+import { Chat } from "./Components/chat/chat";
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
 
           {/* generate question page */}
           <Route path="/generate" element={<Generatequestion />}/>
+
+          {/* chat */}
+          <Route path="/chat" element={<Chat />}/>
 
         </Routes>
       </BrowserRouter>

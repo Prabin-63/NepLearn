@@ -17,15 +17,21 @@ export const Loginsignup = () => {
       <div className="inputs">
         <div className="input">
           <img src={user_icon} alt="" />
-          <input type="text" />
+          <input
+            type="text"
+            placeholder="User Name" />
         </div>
         <div className="input">
           <img src={email_icon} alt="" />
-          <input type="email" />
+          <input
+            type="email"
+            placeholder="Email" />
         </div>
         <div className="input">
           <img src={lock_icon} alt="" />
-          <input type="password" />
+          <input
+            type="password"
+            placeholder="Password" />
         </div>
         <div className="submit-container">
           <div
