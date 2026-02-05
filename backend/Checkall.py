@@ -4,7 +4,9 @@ def get_year(text):
     match = re.search(r'\b(20\d{2})\b', text)
     if match:
         return int(match.group(1))
-    return None
+    else:
+        match = 2026
+        return match
 
 def check_input(text):
     """Check if text is asking to generate questions"""
@@ -50,4 +52,6 @@ def check_nset(text):
 
     if match:
         return int(match.group(1) or match.group(2))
-    return None
+    else:
+        match = 1
+        return match
