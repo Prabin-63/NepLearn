@@ -92,7 +92,7 @@ export const Chat = () => {
                     )}
 
                     {messages.map((msg, index) => (
-                        <div
+                        <div 
                             key={index}
                             className={`chat-message ${msg.role}`}
                         >
