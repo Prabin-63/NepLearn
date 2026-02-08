@@ -28,7 +28,7 @@ def check_subject(text):
     
     # Common subjects - add more as needed
     subjects = {
-        "c": ["c programming", "c-programming", " c ", "language c"],
+        "c": ["c programming", "c-programming", "c", "language c"],
         "python": ["python"],
         "java": ["java"],
         "data structures": ["data structures", "ds", "dsa"],

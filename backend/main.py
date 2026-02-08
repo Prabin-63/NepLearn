@@ -465,18 +465,18 @@ def predict_model(req:Features):
         if not valid:
              raise HTTPException(
                 status_code=400,
-                detail="Use prompt like (Generate the questions of subject and the year.)"
+                detail="Use prompt like (Generate question paper of ('subject') for (year, eg. '2026')  and number of set (10 ; max=10).)"
             )
         check = check_subject(req.user_input)
         if not check:
              raise HTTPException(
                 status_code=400,
-                detail="We have only questions of C-Programming, use prompt acc to that"
+                detail="We have only questions of C-Programming, use prompt like Generate question paper of (subject) for (year, eg. 2026)  and number of set (10 ; max=10)."
             )
         if year is None:
             raise HTTPException(
                 status_code=400,
-                detail="Year (20xx) not found in input text"
+                detail="Year (20xx) not found in input text. Use prompt like Generate question paper of (subject) for (year, eg. 2026)  and number of set (10 ; max=10)."
             )
         if sets > 10:
             raise HTTPException(

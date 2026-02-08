@@ -238,7 +238,6 @@ export const Generatequestion = () => {
   );
 };*/
 // Generatequestion.jsx
-// Generatequestion.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./generatequestion.css";
@@ -247,6 +246,7 @@ export const Generatequestion = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState(null);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
@@ -259,19 +259,15 @@ export const Generatequestion = () => {
       setMessages([
         {
           role: "bot",
-          text: (
-            <>
-              <p>👋 <strong>Hi! I'm Nep-Learn, your AI study buddy.</strong></p>
-              <p>For generating questions.</p>
-              <p>Use a prompt like:</p>
-              <p>
-                <strong>
-                  Generate question paper of ("subject") for (year, eg. "2026")  and number of set ("10" ; max=10)
-                  Example: Generate question paper of C-Programming for 2026 and number of set 1.
-                </strong>
-              </p>
-            </>
-          ),
+          text: `👋 Hi! I'm Nep-Learn, your AI study buddy.
+
+For generating questions.
+
+Use a prompt like:
+
+Generate question paper of ("subject") for (year, eg. "2026") and number of set ("10" ; max=10)
+Example: Generate question paper of C-Programming for 2026 and number of set 1.
+If year and set not mentioned, default year=2026 and number of set=1.`,
         },
       ]);
     }
@@ -435,7 +431,8 @@ export const Generatequestion = () => {
       console.error("Error sending message:", err);
       const botMessage = {
         role: "bot",
-        text: `❌ Error: ${err.message}`
+        text: `❌ Error: ${err.message}`,
+        isError: true
       };
       setMessages((prev) => [...prev, botMessage]);
     } finally {
@@ -449,6 +446,21 @@ export const Generatequestion = () => {
     }
   };
 
+  const copyToClipboard = async (text, index) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const editMessage = (text, index) => {
+    setInput(text);
+    // Remove messages after this point to allow re-generation
+    setMessages(prev => prev.slice(0, index));
+  };
 
   return (
     <div className="home-container">
@@ -478,16 +490,27 @@ export const Generatequestion = () => {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`chat-message ${msg.role}`}
+              className={`chat-message ${msg.role} ${msg.isError ? 'error-message' : ''}`}
             >
-              <pre style={{
-                whiteSpace: "pre-wrap",
-                fontFamily: "inherit",
-                margin: 0,
-                lineHeight: "1.7"
-              }}>
-                {msg.text}
-              </pre>
+              <pre>{msg.text}</pre>
+              <div className="message-actions">
+                <button 
+                  className="action-btn copy-btn" 
+                  onClick={() => copyToClipboard(msg.text, index)}
+                  title="Copy message"
+                >
+                  {copiedIndex === index ? '✓ Copied!' : '📋 Copy'}
+                </button>
+                {msg.role === 'user' && (
+                  <button 
+                    className="action-btn edit-btn" 
+                    onClick={() => editMessage(msg.text, index)}
+                    title="Edit and resend"
+                  >
+                    ✏️ Edit
+                  </button>
+                )}
+              </div>
             </div>
           ))}
           {loading && (
