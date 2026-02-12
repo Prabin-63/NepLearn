@@ -205,7 +205,6 @@ NepLearn demonstrates a practical application of machine learning and conversati
 ---
 
 ## 👤 Authors
-**Prabin Bashyal** 
-**Sahaj Wagle** 
-**Saksham Dallakoti** 
-
+**Prabin Babu Basel**<br>
+**Sahaj Wagle**<br>
+**Saksham Dallakoti**
