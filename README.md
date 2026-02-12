@@ -88,7 +88,7 @@ Many students struggle to find organized, exam-focused study materials despite t
 ### Prerequisites
 
 - Python 3.8+
-- Node.js 16+
+- React.js 16+
 - PostgreSQL
 
 ---
@@ -175,9 +175,6 @@ The ML pipeline follows these steps:
 1. **Embedding Generation** — Questions encoded into 384-dim vectors using MiniLM
 2. **Clustering** — K-Means and DBSCAN applied to group similar questions
 3. **Classification** — Random Forest and XGBoost trained to predict question relevance
-4. **Split** — 80% training / 20% validation
-5. **Tuning** — Parameters selected through experimental comparison
-
 ---
 
 ## 🚧 Limitations
