@@ -212,6 +212,3 @@ NepLearn demonstrates a practical application of machine learning and conversati
 **Sahaj Wagle** 
 **Saksham Dallakoti** 
 
----
-
-<p align="center">Made with ❤️ for smarter exam preparation</p>
