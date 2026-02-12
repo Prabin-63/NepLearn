@@ -1,70 +1,217 @@
-# Getting Started with Create React App
+# 🎓 NepLearn
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> An AI-driven question recommendation system for personalized undergraduate exam preparation.
 
-## Available Scripts
+NepLearn leverages machine learning, natural language processing, and a chatbot interface to help students study smarter — clustering past exam questions, predicting important topics, and generating answers on demand.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 📌 Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Overview](#-overview)
+- [Features](#-features)
+- [Technologies Used](#-technologies-used)
+- [Dataset](#-dataset)
+- [Installation & Setup](#-installation--setup)
+- [Environment Variables](#-environment-variables)
+- [Model Training](#-model-training)
+- [Limitations](#-limitations)
+- [Future Enhancements](#-future-enhancements)
+- [Authors](#-authors)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 📖 Overview
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Many students struggle to find organized, exam-focused study materials despite the abundance of online resources. **NepLearn** addresses this by:
 
-### `npm run build`
+- Clustering historical exam questions using ML techniques
+- Predicting high-relevance questions based on learned exam patterns
+- Generating contextual answers using a language model
+- Delivering everything through a clean, user-friendly web interface
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## ✨ Features
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Feature | Description |
+|---|---|
+| 🔐 Authentication | Secure user registration and login |
+| 🤖 ML Recommendations | Question suggestions based on exam patterns |
+| 📊 Question Clustering | K-Means and DBSCAN clustering algorithms |
+| 🎯 Relevance Prediction | Random Forest and XGBoost classifiers |
+| ✍️ Question Generation | Prompt-based generation from learned patterns |
+| 💬 AI Answer Generation | Powered by TinyLlama-1.1B-Chat-v1.0 |
+| 🗣️ Chatbot Interface | Interactive learning via conversational UI |
+| 🌐 Web Frontend | Responsive interface built with React.js |
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🛠️ Technologies Used
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Languages
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Frameworks & Libraries
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+| Category | Tools |
+|---|---|
+| Frontend | React.js |
+| Backend | FastAPI |
+| ML / Data | scikit-learn, XGBoost, NumPy, Pandas |
+| NLP / LLM | Hugging Face Transformers, sentence-transformers (MiniLM), TinyLlama |
 
-## Learn More
+### Tools & Infrastructure
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| Tool | Purpose |
+|---|---|
+| PostgreSQL | Primary database |
+| pytesseract | OCR for PDF extraction |
+| Git & GitHub | Version control |
+| VS Code / Jupyter | Development environment |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 📂 Dataset
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **1,000+** C Programming questions
+- Sourced from past university exam papers and textbooks
+- Preprocessed with text cleaning and normalization
+- Encoded into **384-dimensional embeddings** using MiniLM
+- Stored in JSON format with metadata
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## ⚙️ Installation & Setup
 
-### Making a Progressive Web App
+### Prerequisites
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- Python 3.8+
+- Node.js 16+
+- PostgreSQL
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 1️⃣ Clone the Repository
 
-### Deployment
+```bash
+git clone https://github.com/your-username/neplearn.git
+cd neplearn
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+### 2️⃣ Backend Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+cd backend
+python -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate        # macOS/Linux
+venv\Scripts\activate           # Windows
+
+pip install -r requirements.txt
+```
+
+Start the backend server:
+
+```bash
+uvicorn main:app --reload
+```
+
+> Backend runs at: **http://127.0.0.1:8000**
+
+---
+
+### 3️⃣ Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+> Frontend runs at: **http://localhost:3000**
+
+---
+
+### 4️⃣ Database Setup
+
+1. Install [PostgreSQL](https://www.postgresql.org/download/)
+2. Create a new database:
+
+```sql
+CREATE DATABASE neplearn;
+```
+
+3. Update database credentials in your `.env` file (see [Environment Variables](#-environment-variables))
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+SECRET_KEY=your_secret_key_here
+DATABASE_URL=postgresql://user:password@localhost:5432/neplearn
+ALGORITHM=HS256
+```
+
+> ⚠️ **Important:** Add `.env` to your `.gitignore` to keep credentials out of version control.
+
+```bash
+echo ".env" >> .gitignore
+```
+
+---
+
+## 🧪 Model Training
+
+The ML pipeline follows these steps:
+
+1. **Embedding Generation** — Questions encoded into 384-dim vectors using MiniLM
+2. **Clustering** — K-Means and DBSCAN applied to group similar questions
+3. **Classification** — Random Forest and XGBoost trained to predict question relevance
+4. **Split** — 80% training / 20% validation
+5. **Tuning** — Parameters selected through experimental comparison
+
+---
+
+## 🚧 Limitations
+
+- Currently supports **C Programming questions only**
+- Relatively small dataset size
+- Chatbot does **not** maintain conversation history across sessions
+- Performance may be slower on **CPU-only systems** due to LLM inference
+- Not yet tested for large-scale deployment
+
+---
+
+## 🚀 Future Enhancements
+
+- [ ] Multi-subject support beyond C Programming
+- [ ] Larger and more diverse question datasets
+- [ ] Context-aware, multi-turn chatbot
+- [ ] Advanced recommendation models (e.g., transformer-based)
+- [ ] Cloud deployment with horizontal scalability
+- [ ] User feedback loop for continuous model improvement
+
+---
+
+## 📘 Conclusion
+
+NepLearn demonstrates a practical application of machine learning and conversational AI in the education domain. The system successfully organizes academic questions, predicts exam-relevant content, and supports students through intelligent recommendations and AI-generated answers — providing a strong foundation for future intelligent learning platforms.
+
+---
+
+## 👤 Authors
+**Prabin Bashyal** 
+**Sahaj Wagle** 
+**Saksham Dallakoti** 
+
+---
+
+<p align="center">Made with ❤️ for smarter exam preparation</p>
