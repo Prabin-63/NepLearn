@@ -96,7 +96,7 @@ Many students struggle to find organized, exam-focused study materials despite t
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/neplearn.git
+git clone https://github.com/Prabin-63/NepLearn.git
 cd neplearn
 ```
 

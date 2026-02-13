@@ -1,0 +1,32 @@
+# ── Web Framework ─────────────────────────────────────────
+fastapi
+uvicorn[standard]
+
+# ── Database ───────────────────────────────────────────────
+sqlalchemy
+psycopg2-binary
+
+# ── Authentication & Security ──────────────────────────────
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+
+# ── Machine Learning ───────────────────────────────────────
+scikit-learn
+xgboost
+numpy
+pandas
+
+# ── NLP / LLM (TinyLlama via Hugging Face) ─────────────────
+transformers
+torch
+sentence-transformers
+accelerate
+
+# ── OCR (pytesseract for PDF extraction) ──────────────────
+pytesseract
+Pillow
+
+# ── API & Schema ───────────────────────────────────────────
+pydantic
+python-multipart
